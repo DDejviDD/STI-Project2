@@ -126,19 +126,25 @@ function SendMessage($from, $to, $title, $message, $time)
         echo $e->getMessage();
     }
 }
-function DeleteMessage($id)
+function DeleteMessage($id, $user)
 {
     try {
         // Create (connect to) SQLite database in file
         $file_db = new PDO('sqlite:/usr/share/nginx/databases/database.sqlite');
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $user = test_input($user);
+        $id = test_input($id);
+        $result = ListMessage($user);
 
-        $stmt = $file_db->prepare("DELETE FROM messages WHERE id = :userId");
-        $stmt->execute(array('userId'=>$id));
-        $stmt = $file_db->prepare("DELETE FROM messageSent WHERE idMessage = :userId");
-        $stmt->execute(array('userId'=>$id));
-
+        foreach ($result as $row) {
+            if($row['id'] == $id){
+                $stmt = $file_db->prepare("DELETE FROM messages WHERE id = :messageId");
+                $stmt->execute(array('messageId'=>$id));
+                $stmt = $file_db->prepare("DELETE FROM messageSent WHERE idMessage = :messageId");
+                $stmt->execute(array('messageId'=>$id));
+            }
+        }
     } catch (PDOException $e) {
         echo $e->getMessage();
     }

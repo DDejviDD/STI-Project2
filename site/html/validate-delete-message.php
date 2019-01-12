@@ -7,7 +7,7 @@ if(!isset($_SESSION['user_id'])){
 if( isset($_SESSION['CSRF']) and isset($_POST['CSRF']) and $_SESSION['CSRF'] == $_POST['CSRF'] and isset($_POST['idToDelete'])){
     include_once "database/database.php";
     include_once "utils/utils.php";
-    DeleteMessage(test_input($_POST['idToDelete']));
+    DeleteMessage(test_input($_POST['idToDelete']), $_SESSION['username']);
 
 }
 
