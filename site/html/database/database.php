@@ -57,11 +57,8 @@ function ListMessage($user)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $stmt = $file_db->prepare("SELECT * FROM  messages INNER JOIN messageSent ON messages.id = messageSent.idMessage
-        WHERE messageSent.receiver LIKE :userId  ORDER BY messages.time DESC ;");
-
-        $stmt->execute(array('userId'=>$id));
-
+        $stmt = $file_db->prepare("SELECT * FROM  messages INNER JOIN messageSent ON messages.id = messageSent.idMessage WHERE messageSent.receiver LIKE :userId  ORDER BY messages.time DESC");
+        $stmt->execute(array('userId'=>$user));
         return $stmt->fetchAll();
 
     } catch (PDOException $e) {
@@ -92,8 +89,8 @@ function GetUserInfo($login)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
-        $stmt = $file_db->prepare("SELECT login, valid, role, password FROM users WHERE login LIKE :userId'");
-        $stmt->execute(array('userId'=>$id));
+        $stmt = $file_db->prepare("SELECT login, valid, role, password FROM users WHERE login LIKE :userId");
+        $stmt->execute(array('userId'=>$login));
 
         return $stmt->fetchAll();
 
@@ -174,7 +171,7 @@ function AddUser($login, $password, $valid, $role)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $stmt = $file_db->prepare("INSERT INTO users (login, password, valid, role) VALUES (:userId, :pass, :newValid, :newRole);");
+        $stmt = $file_db->prepare("INSERT INTO users (login, password, valid, role) VALUES (:userId, :pass, :newValid, :newRole)");
         $stmt->execute(array('userId'=>$login, 'pass'=>$password,'newValid'=>$valid,'newRole'=>$role));
 
     } catch (PDOException $e) {
@@ -223,8 +220,8 @@ function isUserValid($login, $password)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $stmt = $file_db->prepare('SELECT * FROM users WHERE login = :username AND password = :password AND valid = 1');
-        $stmt->execute(array('username'=>$login, 'password'=>$password));
+        $stmt = $file_db->prepare("SELECT * FROM users WHERE login = :username AND password = :pass AND valid = 1");
+        $stmt->execute(array('username'=>$login, 'pass'=>$password));
         $result = $stmt->fetchAll();
 
         foreach ($result as $row) {

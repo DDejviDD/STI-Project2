@@ -126,7 +126,12 @@ $data = ListMessage($_SESSION['username']);
                                     <td><a class="dropdown-item"
                                            href="read-write-message.php?type=Answer&id=<?php echo($row['id']) ?>">Answer</a>
                                     </td>
-                                    <td><a class="dropdown-item" href="validate-delete-message.php?id=<?php echo($row['id']) ?>">Delete</a>
+                                    <td>
+                                        <form action="validate-delete-message.php" method="POST" >
+                                            <input type="hidden" name="idToDelete" value="<?php echo($row['id']) ?>"/>
+                                            <input type="hidden" name="CSRF" value="<?php echo($_SESSION['CSRF']) ?>" />
+                                            <input class="dropdown-item" type="submit" value="Delete">
+                                        </form>
                                     </td>
                                     <td><a class="dropdown-item" href="read-write-message.php?type=Details&id=<?php echo($row['id'])?>">Details</a></td>
                                 <tr/>

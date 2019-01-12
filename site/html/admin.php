@@ -115,7 +115,12 @@ $data = ListUser();
                           <td><?php echo($row['login']) ?></td>
                           <td><?php echo($row['role'] == 0 ? "Admin" : "User") ?> </td>
                           <td><?php echo($row['valid'] == 1 ? "Yes" : "No") ?> </td>
-                          <td><a class="dropdown-item" href="validate-delete-user.php?id=<?php echo($row['login']) ?>">Delete</a>
+                          <td>
+                          <form action="validate-delete-user.php" method="POST" >
+                          <input type="hidden" name="idToDelete" value="<?php echo($row['login']) ?>"/>
+                          <input type="hidden" name="CSRF" value="<?php echo($_SESSION['CSRF']) ?>" />
+                          <input class="dropdown-item" type="submit" value="Delete">
+                          </form>
                           </td>
                           <td><a class="dropdown-item" href="add-edit-user.php?type=Edit&id=<?php echo($row['login']) ?>">Edit</a></td>
                           <td><a class="dropdown-item" href="add-edit-user.php?type=Password&id=<?php echo($row['login']) ?>">Change</a></td>
