@@ -6,7 +6,8 @@ if(!isset($_SESSION['user_id']) or $_SESSION['user_id'] != 0){
 }
 
 include_once "database/database.php";
-DeleteUser($_GET['id']);
+include_once "utils/utils.php";
+DeleteUser(test_input($_GET['id']));
 header('Location: admin.php');
 ?>
 

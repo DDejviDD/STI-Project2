@@ -3,12 +3,13 @@ session_start();
 if(!isset($_SESSION['user_id']) or $_SESSION['user_id'] != 0){
     header('Location: 404.php');
 }
-print_r($_POST);
-$type = $_GET['type'];
-$login = $_POST['login'];
-$password = sha1($_POST['password']);
-$privilege = $_POST['userPrivileges'] - 1;
-$isActive = $_POST['isValid'];
+include_once "utils/utils.php";
+
+$type = test_input($_GET['type']);
+$login = test_input($_POST['login']);
+$password = sha1(test_input($_POST['password']));
+$privilege = test_input($_POST['userPrivileges']) - 1;
+$isActive = test_input($_POST['isValid']);
 
 include_once "database/database.php";
 

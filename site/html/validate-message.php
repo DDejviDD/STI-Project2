@@ -5,7 +5,8 @@ if(!isset($_SESSION['user_id'])){
 }
 
 include_once "database/database.php";
-SendMessage($_SESSION['username'], $_POST['to'], $_POST['subject'], $_POST['content'], time());
+include_once "utils/utils.php";
+SendMessage($_SESSION['username'], test_input($_POST['to']), test_input($_POST['subject']), test_input($_POST['content']), time());
 
 header('Location: view.php');
 ?>

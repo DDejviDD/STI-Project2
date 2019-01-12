@@ -1,16 +1,20 @@
 <?php
 
 include 'database/database.php';
-
 session_start();
 
 if(!empty($_POST)){
-    
-    if(isset($_POST['username']) and isset($_POST['password'])){
 
-        if(isUserValid($_POST['username'],sha1($_POST['password']))){
-            $_SESSION['username'] = $_POST['username'];
-            if(isAdmin($_POST['username'])){
+    include_once "utils/utils.php";
+
+    $username = test_input($_POST['username']);
+    $password = test_input($_POST['password']);
+    
+    if(isset($username) and isset()){
+
+        if(isUserValid($username,sha1($password))){
+            $_SESSION['username'] = $username;
+            if(isAdmin($username)){
                 $_SESSION['user_id'] = 0;
                 header('Location: admin.php');
             }else{

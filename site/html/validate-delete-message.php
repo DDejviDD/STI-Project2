@@ -5,7 +5,8 @@ if(!isset($_SESSION['user_id'])){
 }
 
 include_once "database/database.php";
-DeleteMessage($_GET['id']);
+include_once "utils/utils.php";
+DeleteMessage(test_input($_GET['id']));
 
 header('Location: view.php');
 ?>

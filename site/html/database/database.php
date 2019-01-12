@@ -2,7 +2,7 @@
 
 // Set default timezone
 date_default_timezone_set('UTC');
-
+include_once "../utils/utils.php";
 
 /****************************************
  * Create database and tables           *
@@ -57,14 +57,12 @@ function ListMessage($user)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $result = $file_db->query("SELECT * 
-                                                  FROM  messages
-                                                  INNER JOIN messageSent
-                                                    ON messages.id = messageSent.idMessage
-                                                  WHERE messageSent.receiver LIKE '{$user}'
-                                                  ORDER BY messages.time DESC ;");
+        $stmt = $file_db->prepare("SELECT * FROM  messages INNER JOIN messageSent ON messages.id = messageSent.idMessage
+        WHERE messageSent.receiver LIKE :userId  ORDER BY messages.time DESC ;");
 
-        return $result;
+        $stmt->execute(array('userId'=>$id));
+
+        return $stmt->fetchAll();
 
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -93,10 +91,11 @@ function GetUserInfo($login)
         $file_db = new PDO('sqlite:/usr/share/nginx/databases/database.sqlite');
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $file_db->prepare("SELECT login, valid, role, password FROM users WHERE login LIKE :userId'");
+        $stmt->execute(array('userId'=>$id));
 
-        $result = $file_db->query("SELECT login, valid, role, password FROM users WHERE login LIKE '{$login}'");
-
-        return $result;
+        return $stmt->fetchAll();
 
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -114,16 +113,17 @@ function SendMessage($from, $to, $title, $message, $time)
 
         $result = $file_db->query("SELECT max(id) FROM messages;");
 
-
         foreach ($result as $row){
             $id= $row['max(id)'] + 1;
         }
 
-        $file_db->exec("INSERT INTO messages (id, title, message, time)
-                VALUES ('{$id}','{$title}', '{$message}', '{$formatted_time}');");
+        $file_db->exec();
 
-        $file_db->exec("INSERT INTO messageSent (sender, receiver, idMessage)
-                VALUES ('{$from}', '{$to}', '{$id}');");
+        $stmt = $file_db->prepare("INSERT INTO messages (id, title, message, time) VALUES (:userId,:title, :mess, :tim)");
+        $stmt->execute(array('userId'=>$id, 'title'=>$title, 'mess'=>$message, 'tim'=>$formatted_time));
+
+        $stmt = $file_db->prepare("INSERT INTO messageSent (sender, receiver, idMessage) VALUES (:fro, :t, :userId)");
+        $stmt->execute(array('fro'=>$from, 't'=>$to,'userId'=>$id));
 
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -137,9 +137,10 @@ function DeleteMessage($id)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-
-        $file_db->exec("DELETE FROM messages WHERE id = '{$id}';");
-        $file_db->exec("DELETE FROM messageSent WHERE idMessage = '{$id}';");
+        $stmt = $file_db->prepare("DELETE FROM messages WHERE id = :userId");
+        $stmt->execute(array('userId'=>$id));
+        $stmt = $file_db->prepare("DELETE FROM messageSent WHERE idMessage = :userId");
+        $stmt->execute(array('userId'=>$id));
 
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -173,9 +174,8 @@ function AddUser($login, $password, $valid, $role)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-
-        $file_db->exec("INSERT INTO users (login, password, valid, role) 
-                VALUES ('{$login}', '{$password}', '{$valid}', '{$role}');");
+        $stmt = $file_db->prepare("INSERT INTO users (login, password, valid, role) VALUES (:userId, :pass, :newValid, :newRole);");
+        $stmt->execute(array('userId'=>$login, 'pass'=>$password,'newValid'=>$valid,'newRole'=>$role));
 
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -206,9 +206,9 @@ function DeleteUser($login)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+        $stmt = $file_db->prepare('DELETE FROM users WHERE login = :username');
+        $stmt->execute(array('username'=>$login));
 
-        $file_db->exec("DELETE FROM users 
-                                  WHERE login = '{$login}';");
 
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -223,12 +223,12 @@ function isUserValid($login, $password)
         // Set errormode to exceptions
         $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-
-        $result = $file_db->query("SELECT * FROM users 
-                                             WHERE login = '{$login}' AND password = '{$password}' AND valid = '1';");
+        $stmt = $file_db->prepare('SELECT * FROM users WHERE login = :username AND password = :password AND valid = 1');
+        $stmt->execute(array('username'=>$login, 'password'=>$password));
+        $result = $stmt->fetchAll();
 
         foreach ($result as $row) {
-            if($row['login'] == $login){
+            if($row['login'] == test_input($login)){
                 return true;
             }
         }
@@ -251,8 +251,9 @@ function isAdmin($login)
 
         $result = $file_db->query("SELECT * FROM users 
                                              WHERE role == '0' AND valid == '1';");
+                                             
         foreach ($result as $row) {
-            if($row['login'] == $login){
+            if($row['login'] == test_input($login)){
                 return true;
             }
         }

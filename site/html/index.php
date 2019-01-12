@@ -8,7 +8,6 @@ if(isset($_SESSION['user_id'])){
     if($_SESSION['user_id'] == 1){
         header('Location: view.php');
     }
-
 }
 ?>
 <!DOCTYPE html>

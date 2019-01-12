@@ -1,11 +1,12 @@
 <?php
 session_start();
+include_once "utils/utils.php";
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
 }
 
-$type = $_GET['type'];
-$id = $_GET['id'];
+$type = test_input($_GET['type']);
+$id = test_input($_GET['id']);
 $receiver="";
 $subject="";
 $content="";

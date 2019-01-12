@@ -1,11 +1,12 @@
 <?php
 session_start();
+include_once "utils/utils.php";
 if(!isset($_SESSION['user_id'])){
     header('Location: 404.php');
 }
 
 include_once "database/database.php";
-ChangePassword($_SESSION['username'], sha1($_POST['newPassword']));
+ChangePassword($_SESSION['username'], sha1(test_input($_POST['newPassword'])));
 if(($_SESSION['user_id']) == 0) {
     header('Location: admin.php');
 } else {header('Location: view.php');}

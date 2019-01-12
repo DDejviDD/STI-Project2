@@ -1,13 +1,14 @@
 <?php
 session_start();
+include_once "utils/utils.php";
 if (!isset($_SESSION['user_id']) or $_SESSION['user_id'] != 0) {
     header('Location: 404.php');
 }
 $type = "Add";
 if (isset($_GET['type'])) {
-    $type = $_GET['type'];
+    $type = test_input($_GET['type']);
     include_once "database/database.php";
-    $userInfo = GetUserInfo($_GET['id']);
+    $userInfo = GetUserInfo(test_input($_GET['id']));
     foreach ($userInfo as $u) {
         $login = $u['login'];
         $privilege = $u['role'];
@@ -125,7 +126,7 @@ if (isset($_GET['type'])) {
                                 <div class="form-label-group">
                                     <input name="login" type="text" id="login" class="form-control"
                                            placeholder="First name" required="required" autofocus="autofocus"
-                                           value="<?php echo $_GET['id'] ?>">
+                                           value="<?php echo test_input($_GET['id']) ?>">
                                     <label for="login">Login</label>
                                 </div>
                             </div>
