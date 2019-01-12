@@ -1,0 +1,60 @@
+index.php
+
+	form
+
+validate-login.php
+
+	call db
+
+admin.php
+
+	call db
+
+validate-delete-user.php
+
+	faire pop up confirmation
+
+add-edit-user.php
+
+	form
+
+	call db
+
+validate-user
+
+	call db
+
+change-password.php
+
+	form
+
+validate-change-password
+
+	call db
+
+	sha1
+
+read-write-message.php
+
+	call db
+
+	form
+
+validate-message.php
+
+	call db
+
+validate-delete-message.php
+
+	On peut delete les messages de n'importe qui avec le bon id
+
+view.php
+	link to form
+
+database.php
+
+	renforcer contre injection
+
+		a faire ici ou dans form?
+
+	pas delete admin si il est seul
