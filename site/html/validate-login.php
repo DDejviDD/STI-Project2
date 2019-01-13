@@ -11,7 +11,7 @@ if(!empty($_POST)){
     echo $password;
     if(isset($username) and isset($password)){
 
-        if(isUserValid($username,sha1($password))){
+        if(isUserValid($username, sha1($password))){
             $_SESSION['CSRF']=base64_encode(openssl_random_pseudo_bytes(32));
             $_SESSION['username'] = $username;
             if(isAdmin($username)){
